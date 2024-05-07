@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bicycles",
+  "info": {
+    "singularName": "bicycle",
+    "pluralName": "bicycles",
+    "displayName": "bicycle",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "bicycleNumber": {
+      "type": "integer"
+    },
+    "isBooked": {
+      "type": "boolean"
+    },
+    "room": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::room.room",
+      "inversedBy": "bicycles"
+    }
+  }
+}

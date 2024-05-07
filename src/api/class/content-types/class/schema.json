@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "classes",
+  "info": {
+    "singularName": "class",
+    "pluralName": "classes",
+    "displayName": "Class",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombreClase": {
+      "type": "string"
+    },
+    "horaFin": {
+      "type": "time"
+    },
+    "diaDeLaSemana": {
+      "type": "enumeration",
+      "enum": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ]
+    },
+    "horaInicio": {
+      "type": "time"
+    },
+    "spotsDisponibles": {
+      "type": "integer"
+    },
+    "instructor": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::instructor.instructor"
+    },
+    "room": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::room.room"
+    }
+  }
+}
