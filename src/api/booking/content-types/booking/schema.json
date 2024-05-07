@@ -35,6 +35,9 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "bookings"
+    },
+    "fechaHora": {
+      "type": "datetime"
     }
   }
 }
