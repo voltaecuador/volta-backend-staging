@@ -33,9 +33,6 @@
     "horaInicio": {
       "type": "time"
     },
-    "spotsDisponibles": {
-      "type": "integer"
-    },
     "instructor": {
       "type": "relation",
       "relation": "oneToOne",

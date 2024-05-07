@@ -798,7 +798,7 @@ export interface ApiBicycleBicycle extends Schema.CollectionType {
   info: {
     singularName: 'bicycle';
     pluralName: 'bicycles';
-    displayName: 'bicycle';
+    displayName: 'Bicycle';
     description: '';
   };
   options: {
@@ -902,7 +902,6 @@ export interface ApiClassClass extends Schema.CollectionType {
       ]
     >;
     horaInicio: Attribute.Time;
-    spotsDisponibles: Attribute.Integer;
     instructor: Attribute.Relation<
       'api::class.class',
       'oneToOne',
