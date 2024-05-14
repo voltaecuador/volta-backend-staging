@@ -87,6 +87,12 @@
       "type": "string",
       "regex": "^\\+(?:[0-9] ?){6,14}[0-9]$",
       "unique": false
+    },
+    "past_bookings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::past-booking.past-booking",
+      "mappedBy": "users_permissions_user"
     }
   }
 }

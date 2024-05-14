@@ -1,10 +1,10 @@
 {
   "kind": "collectionType",
-  "collectionName": "bookings",
+  "collectionName": "past_bookings",
   "info": {
-    "singularName": "booking",
-    "pluralName": "bookings",
-    "displayName": "Booking",
+    "singularName": "past-booking",
+    "pluralName": "past-bookings",
+    "displayName": "PastBooking",
     "description": ""
   },
   "options": {
@@ -12,6 +12,13 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "bookingStatus": {
+      "type": "enumeration",
+      "enum": [
+        "refunded",
+        "completed"
+      ]
+    },
     "class": {
       "type": "relation",
       "relation": "oneToOne",
@@ -22,18 +29,11 @@
       "relation": "oneToOne",
       "target": "api::bicycle.bicycle"
     },
-    "bookingStatus": {
-      "type": "enumeration",
-      "enum": [
-        "refunded",
-        "completed"
-      ]
-    },
-    "user": {
+    "users_permissions_user": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "bookings"
+      "inversedBy": "past_bookings"
     },
     "fechaHora": {
       "type": "datetime"

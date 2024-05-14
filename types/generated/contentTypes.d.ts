@@ -733,6 +733,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
     apellido: Attribute.String;
     birthday: Attribute.Date;
     telefono: Attribute.String;
+    past_bookings: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::past-booking.past-booking'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -855,7 +860,7 @@ export interface ApiBookingBooking extends Schema.CollectionType {
       'oneToOne',
       'api::bicycle.bicycle'
     >;
-    BookingStatus: Attribute.Enumeration<['refunded', 'completed']>;
+    bookingStatus: Attribute.Enumeration<['refunded', 'completed']>;
     user: Attribute.Relation<
       'api::booking.booking',
       'manyToOne',
@@ -965,6 +970,86 @@ export interface ApiInstructorInstructor extends Schema.CollectionType {
   };
 }
 
+export interface ApiPastBookingPastBooking extends Schema.CollectionType {
+  collectionName: 'past_bookings';
+  info: {
+    singularName: 'past-booking';
+    pluralName: 'past-bookings';
+    displayName: 'PastBooking';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bookingStatus: Attribute.Enumeration<['refunded', 'completed']>;
+    class: Attribute.Relation<
+      'api::past-booking.past-booking',
+      'oneToOne',
+      'api::class.class'
+    >;
+    bicycle: Attribute.Relation<
+      'api::past-booking.past-booking',
+      'oneToOne',
+      'api::bicycle.bicycle'
+    >;
+    users_permissions_user: Attribute.Relation<
+      'api::past-booking.past-booking',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    fechaHora: Attribute.DateTime;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::past-booking.past-booking',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::past-booking.past-booking',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiPurchaseRidePurchaseRide extends Schema.CollectionType {
+  collectionName: 'purchase_rides';
+  info: {
+    singularName: 'purchase-ride';
+    pluralName: 'purchase-rides';
+    displayName: 'PurchaseRide';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    numeroDeRides: Attribute.Integer;
+    precio: Attribute.Decimal;
+    esUnPack: Attribute.Boolean;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::purchase-ride.purchase-ride',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::purchase-ride.purchase-ride',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiRoomRoom extends Schema.CollectionType {
   collectionName: 'rooms';
   info: {
@@ -1014,6 +1099,8 @@ declare module '@strapi/types' {
       'api::booking.booking': ApiBookingBooking;
       'api::class.class': ApiClassClass;
       'api::instructor.instructor': ApiInstructorInstructor;
+      'api::past-booking.past-booking': ApiPastBookingPastBooking;
+      'api::purchase-ride.purchase-ride': ApiPurchaseRidePurchaseRide;
       'api::room.room': ApiRoomRoom;
     }
   }

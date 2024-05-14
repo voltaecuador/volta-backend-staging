@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "purchase_rides",
+  "info": {
+    "singularName": "purchase-ride",
+    "pluralName": "purchase-rides",
+    "displayName": "PurchaseRide",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "numeroDeRides": {
+      "type": "integer"
+    },
+    "precio": {
+      "type": "decimal"
+    },
+    "esUnPack": {
+      "type": "boolean"
+    }
+  }
+}
