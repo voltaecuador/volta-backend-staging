@@ -73,6 +73,20 @@
       "relation": "oneToMany",
       "target": "api::booking.booking",
       "mappedBy": "user"
+    },
+    "nombre": {
+      "type": "string"
+    },
+    "apellido": {
+      "type": "string"
+    },
+    "birthday": {
+      "type": "date"
+    },
+    "telefono": {
+      "type": "string",
+      "regex": "^\\+(?:[0-9] ?){6,14}[0-9]$",
+      "unique": false
     }
   }
 }

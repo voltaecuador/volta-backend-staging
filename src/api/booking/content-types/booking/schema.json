@@ -22,12 +22,11 @@
       "relation": "oneToOne",
       "target": "api::bicycle.bicycle"
     },
-    "paymentStatus": {
+    "BookingStatus": {
       "type": "enumeration",
       "enum": [
-        "pending",
-        "completed",
-        "failed"
+        "refunded",
+        "completed"
       ]
     },
     "user": {

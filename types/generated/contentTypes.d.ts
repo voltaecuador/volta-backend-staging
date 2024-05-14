@@ -729,6 +729,10 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'oneToMany',
       'api::booking.booking'
     >;
+    nombre: Attribute.String;
+    apellido: Attribute.String;
+    birthday: Attribute.Date;
+    telefono: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -806,7 +810,6 @@ export interface ApiBicycleBicycle extends Schema.CollectionType {
   };
   attributes: {
     bicycleNumber: Attribute.Integer;
-    isBooked: Attribute.Boolean;
     room: Attribute.Relation<
       'api::bicycle.bicycle',
       'manyToOne',
@@ -852,7 +855,7 @@ export interface ApiBookingBooking extends Schema.CollectionType {
       'oneToOne',
       'api::bicycle.bicycle'
     >;
-    paymentStatus: Attribute.Enumeration<['pending', 'completed', 'failed']>;
+    BookingStatus: Attribute.Enumeration<['refunded', 'completed']>;
     user: Attribute.Relation<
       'api::booking.booking',
       'manyToOne',
