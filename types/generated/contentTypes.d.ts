@@ -729,10 +729,18 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'oneToMany',
       'api::booking.booking'
     >;
-    nombre: Attribute.String;
-    apellido: Attribute.String;
-    birthday: Attribute.Date;
-    telefono: Attribute.String;
+    nombre: Attribute.String &
+      Attribute.Required &
+      Attribute.SetMinMaxLength<{
+        minLength: 1;
+      }>;
+    apellido: Attribute.String &
+      Attribute.Required &
+      Attribute.SetMinMaxLength<{
+        minLength: 1;
+      }>;
+    birthday: Attribute.Date & Attribute.Required;
+    telefono: Attribute.String & Attribute.Required;
     past_bookings: Attribute.Relation<
       'plugin::users-permissions.user',
       'oneToMany',
