@@ -1039,7 +1039,6 @@ export interface ApiPurchaseRidePurchaseRide extends Schema.CollectionType {
   attributes: {
     numeroDeRides: Attribute.Integer;
     precio: Attribute.Decimal;
-    esUnPack: Attribute.Boolean;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

@@ -4,14 +4,17 @@ module.exports = {
       const currentDate = new Date();
       const cutoffDate = new Date(currentDate.getTime() - 90 * 60000); // 1 hora y 30 minutos antes
 
-      const oldBookings = await strapi.entityService.findMany('api::booking.booking', {
-        filters: {
-          fechaHora: {
-            $lt: cutoffDate,
+      const oldBookings = await strapi.entityService.findMany(
+        "api::booking.booking",
+        {
+          filters: {
+            fechaHora: {
+              $lt: cutoffDate,
+            },
           },
-        },
-        populate: ['class', 'bicycle', 'user'],
-      });
+          populate: ["class", "bicycle", "user"],
+        }
+      );
 
       for (const oldBooking of oldBookings) {
         const pastBookingData = {
@@ -22,17 +25,20 @@ module.exports = {
           fechaHora: oldBooking.fechaHora,
         };
 
-        await strapi.entityService.create('api::past-booking.past-booking', {
+        await strapi.entityService.create("api::past-booking.past-booking", {
           data: pastBookingData,
         });
 
-        await strapi.entityService.delete('api::booking.booking', oldBooking.id);
+        await strapi.entityService.delete(
+          "api::booking.booking",
+          oldBooking.id
+        );
       }
 
       console.log(`Moved ${oldBookings.length} bookings to pastBookings table`);
     },
     options: {
-      rule: '0 * * * *', // Run every hour
+      rule: '*/15 * * * *', // Run every 15 minutes - para cada hora '0 * * * *'
     },
   },
 };
