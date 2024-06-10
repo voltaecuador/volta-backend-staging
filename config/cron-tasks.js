@@ -26,8 +26,7 @@ module.exports = {
         };
 
         await strapi.entityService.create("api::past-booking.past-booking", {
-          data: ...pastBookingData,
-          publishedAt: new Date(),
+          data: { ...pastBookingData, publishedAt: new Date() },
         });
 
         await strapi.entityService.delete(
@@ -39,7 +38,7 @@ module.exports = {
       console.log(`Moved ${oldBookings.length} bookings to pastBookings table`);
     },
     options: {
-      rule: '*/15 * * * *', // Run every 15 minutes - para cada hora '0 * * * *'
+      rule: "*/15 * * * *", // Run every 15 minutes - para cada hora '0 * * * *'
     },
   },
 };
