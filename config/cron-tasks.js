@@ -26,7 +26,8 @@ module.exports = {
         };
 
         await strapi.entityService.create("api::past-booking.past-booking", {
-          data: pastBookingData,
+          data: ...pastBookingData,
+          publishedAt: new Date(),
         });
 
         await strapi.entityService.delete(
