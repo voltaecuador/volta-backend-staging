@@ -101,6 +101,12 @@
       "relation": "oneToMany",
       "target": "api::past-booking.past-booking",
       "mappedBy": "users_permissions_user"
+    },
+    "purchased_ride_packs": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::purchased-ride-pack.purchased-ride-pack",
+      "mappedBy": "user"
     }
   }
 }

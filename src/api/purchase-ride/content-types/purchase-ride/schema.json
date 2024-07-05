@@ -17,6 +17,12 @@
     },
     "precio": {
       "type": "decimal"
+    },
+    "diasDeExpiracion": {
+      "type": "integer"
+    },
+    "nombre": {
+      "type": "string"
     }
   }
 }

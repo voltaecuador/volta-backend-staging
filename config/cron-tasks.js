@@ -41,4 +41,49 @@ module.exports = {
       rule: "*/15 * * * *", // Run every 15 minutes - para cada hora '0 * * * *'
     },
   },
+  actualizarClasesPorExpiracion: {
+    task: async ({ strapi }) => {
+      const ahora = new Date();
+      console.log(`Iniciando verificación de expiración a las ${ahora.toISOString()}`);
+
+      // Calculamos la fecha de ayer al final del día
+      const ayerFinalDelDia = new Date(ahora);
+      ayerFinalDelDia.setDate(ayerFinalDelDia.getDate() - 1);
+      ayerFinalDelDia.setHours(23, 59, 59, 999);
+
+      const paquetesExpirados = await strapi.entityService.findMany('api::purchased-ride-pack.purchased-ride-pack', {
+        filters: {
+          fechaExpiracion: { $lte: ayerFinalDelDia },
+          contabilizado: false
+        },
+        populate: ['user']
+      });
+
+      console.log(`Encontrados ${paquetesExpirados.length} paquetes expirados`);
+
+      for (const paquete of paquetesExpirados) {
+        const clasesNoUtilizadas = paquete.clasesOriginales - paquete.clasesUtilizadas;
+        
+        // Actualizar clasesDisponibles del usuario
+        const usuario = paquete.user;
+        const nuevasClasesDisponibles = Math.max(usuario.clasesDisponibles - clasesNoUtilizadas, 0);
+        
+        await strapi.entityService.update('plugin::users-permissions.user', usuario.id, {
+          data: { clasesDisponibles: nuevasClasesDisponibles }
+        });
+
+        // Marcar paquete como contabilizado
+        await strapi.entityService.update('api::purchased-ride-pack.purchased-ride-pack', paquete.id, {
+          data: { contabilizado: true }
+        });
+
+        console.log(`Paquete ${paquete.id} expirado el ${new Date(paquete.fechaExpiracion).toISOString()}. Usuario ${usuario.id}: ${clasesNoUtilizadas} clases restadas. Nuevas clases disponibles: ${nuevasClasesDisponibles}`);
+      }
+
+      console.log('Actualización de clases por expiración completada');
+    },
+    options: {
+      rule: '5 0 * * *', // Ejecutar todos los días a las 00:05 AM
+    },
+  }
 };

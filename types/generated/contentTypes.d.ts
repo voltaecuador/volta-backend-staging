@@ -590,6 +590,53 @@ export interface PluginContentReleasesReleaseAction
   };
 }
 
+export interface PluginI18NLocale extends Schema.CollectionType {
+  collectionName: 'i18n_locale';
+  info: {
+    singularName: 'locale';
+    pluralName: 'locales';
+    collectionName: 'locales';
+    displayName: 'Locale';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    name: Attribute.String &
+      Attribute.SetMinMax<
+        {
+          min: 1;
+          max: 50;
+        },
+        number
+      >;
+    code: Attribute.String & Attribute.Unique;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'plugin::i18n.locale',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'plugin::i18n.locale',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface PluginUsersPermissionsPermission
   extends Schema.CollectionType {
   collectionName: 'up_permissions';
@@ -746,6 +793,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'oneToMany',
       'api::past-booking.past-booking'
     >;
+    purchased_ride_packs: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::purchased-ride-pack.purchased-ride-pack'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -763,17 +815,20 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
-export interface PluginI18NLocale extends Schema.CollectionType {
-  collectionName: 'i18n_locale';
+export interface PluginEmailDesignerEmailTemplate
+  extends Schema.CollectionType {
+  collectionName: 'email_templates';
   info: {
-    singularName: 'locale';
-    pluralName: 'locales';
-    collectionName: 'locales';
-    displayName: 'Locale';
-    description: '';
+    singularName: 'email-template';
+    pluralName: 'email-templates';
+    displayName: 'Email-template';
+    name: 'email-template';
   };
   options: {
     draftAndPublish: false;
+    timestamps: true;
+    increments: true;
+    comment: '';
   };
   pluginOptions: {
     'content-manager': {
@@ -784,25 +839,24 @@ export interface PluginI18NLocale extends Schema.CollectionType {
     };
   };
   attributes: {
-    name: Attribute.String &
-      Attribute.SetMinMax<
-        {
-          min: 1;
-          max: 50;
-        },
-        number
-      >;
-    code: Attribute.String & Attribute.Unique;
+    templateReferenceId: Attribute.Integer & Attribute.Unique;
+    design: Attribute.JSON;
+    name: Attribute.String;
+    subject: Attribute.String;
+    bodyHtml: Attribute.Text;
+    bodyText: Attribute.Text;
+    enabled: Attribute.Boolean & Attribute.DefaultTo<true>;
+    tags: Attribute.JSON;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
-      'plugin::i18n.locale',
+      'plugin::email-designer.email-template',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
     updatedBy: Attribute.Relation<
-      'plugin::i18n.locale',
+      'plugin::email-designer.email-template',
       'oneToOne',
       'admin::user'
     > &
@@ -868,7 +922,9 @@ export interface ApiBookingBooking extends Schema.CollectionType {
       'oneToOne',
       'api::bicycle.bicycle'
     >;
-    bookingStatus: Attribute.Enumeration<['refunded', 'completed']>;
+    bookingStatus: Attribute.Enumeration<
+      ['refunded', 'completed', 'cancelled']
+    >;
     user: Attribute.Relation<
       'api::booking.booking',
       'manyToOne',
@@ -1039,6 +1095,8 @@ export interface ApiPurchaseRidePurchaseRide extends Schema.CollectionType {
   attributes: {
     numeroDeRides: Attribute.Integer;
     precio: Attribute.Decimal;
+    diasDeExpiracion: Attribute.Integer;
+    nombre: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1050,6 +1108,47 @@ export interface ApiPurchaseRidePurchaseRide extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::purchase-ride.purchase-ride',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiPurchasedRidePackPurchasedRidePack
+  extends Schema.CollectionType {
+  collectionName: 'purchased_ride_packs';
+  info: {
+    singularName: 'purchased-ride-pack';
+    pluralName: 'purchased-ride-packs';
+    displayName: 'PurchasedRidePack';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    user: Attribute.Relation<
+      'api::purchased-ride-pack.purchased-ride-pack',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    fechaCompra: Attribute.DateTime;
+    fechaExpiracion: Attribute.DateTime;
+    clasesOriginales: Attribute.Integer;
+    contabilizado: Attribute.Boolean;
+    clasesUtilizadas: Attribute.Integer;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::purchased-ride-pack.purchased-ride-pack',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::purchased-ride-pack.purchased-ride-pack',
       'oneToOne',
       'admin::user'
     > &
@@ -1098,16 +1197,18 @@ declare module '@strapi/types' {
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
+      'plugin::i18n.locale': PluginI18NLocale;
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
-      'plugin::i18n.locale': PluginI18NLocale;
+      'plugin::email-designer.email-template': PluginEmailDesignerEmailTemplate;
       'api::bicycle.bicycle': ApiBicycleBicycle;
       'api::booking.booking': ApiBookingBooking;
       'api::class.class': ApiClassClass;
       'api::instructor.instructor': ApiInstructorInstructor;
       'api::past-booking.past-booking': ApiPastBookingPastBooking;
       'api::purchase-ride.purchase-ride': ApiPurchaseRidePurchaseRide;
+      'api::purchased-ride-pack.purchased-ride-pack': ApiPurchasedRidePackPurchasedRidePack;
       'api::room.room': ApiRoomRoom;
     }
   }

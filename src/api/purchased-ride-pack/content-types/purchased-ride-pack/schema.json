@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "purchased_ride_packs",
+  "info": {
+    "singularName": "purchased-ride-pack",
+    "pluralName": "purchased-ride-packs",
+    "displayName": "PurchasedRidePack",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "purchased_ride_packs"
+    },
+    "fechaCompra": {
+      "type": "datetime"
+    },
+    "fechaExpiracion": {
+      "type": "datetime"
+    },
+    "clasesOriginales": {
+      "type": "integer"
+    },
+    "contabilizado": {
+      "type": "boolean"
+    },
+    "clasesUtilizadas": {
+      "type": "integer"
+    }
+  }
+}
