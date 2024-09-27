@@ -798,6 +798,8 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'oneToMany',
       'api::purchased-ride-pack.purchased-ride-pack'
     >;
+    cedula: Attribute.String;
+    direccion: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
