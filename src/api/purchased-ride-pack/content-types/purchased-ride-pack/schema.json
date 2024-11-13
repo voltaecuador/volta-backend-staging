@@ -32,6 +32,12 @@
     },
     "clasesUtilizadas": {
       "type": "integer"
+    },
+    "transactionId": {
+      "type": "string"
+    },
+    "authorizationCode": {
+      "type": "string"
     }
   }
 }

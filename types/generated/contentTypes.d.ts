@@ -1184,6 +1184,8 @@ export interface ApiPurchasedRidePackPurchasedRidePack
     clasesOriginales: Attribute.Integer;
     contabilizado: Attribute.Boolean;
     clasesUtilizadas: Attribute.Integer;
+    transactionId: Attribute.String;
+    authorizationCode: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
