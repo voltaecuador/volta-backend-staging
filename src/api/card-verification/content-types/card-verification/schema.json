@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "card_verifications",
+  "info": {
+    "singularName": "card-verification",
+    "pluralName": "card-verifications",
+    "displayName": "CardVerification",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "userId": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "card_verifications"
+    },
+    "cardIdentifier": {
+      "type": "string"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "failed",
+        "verified"
+      ]
+    },
+    "transactionId": {
+      "type": "string"
+    },
+    "cardType": {
+      "type": "string"
+    },
+    "lastFourDigits": {
+      "type": "string"
+    }
+  }
+}

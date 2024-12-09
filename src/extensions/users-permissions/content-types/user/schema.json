@@ -113,6 +113,12 @@
     },
     "direccion": {
       "type": "string"
+    },
+    "card_verifications": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::card-verification.card-verification",
+      "mappedBy": "userId"
     }
   }
 }

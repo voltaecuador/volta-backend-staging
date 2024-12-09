@@ -800,6 +800,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
     >;
     cedula: Attribute.String;
     direccion: Attribute.String;
+    card_verifications: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::card-verification.card-verification'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -949,6 +954,47 @@ export interface ApiBookingBooking extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::booking.booking',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiCardVerificationCardVerification
+  extends Schema.CollectionType {
+  collectionName: 'card_verifications';
+  info: {
+    singularName: 'card-verification';
+    pluralName: 'card-verifications';
+    displayName: 'CardVerification';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    userId: Attribute.Relation<
+      'api::card-verification.card-verification',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    cardIdentifier: Attribute.String;
+    status: Attribute.Enumeration<['pending', 'failed', 'verified']>;
+    transactionId: Attribute.String;
+    cardType: Attribute.String;
+    lastFourDigits: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::card-verification.card-verification',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::card-verification.card-verification',
       'oneToOne',
       'admin::user'
     > &
@@ -1252,6 +1298,7 @@ declare module '@strapi/types' {
       'plugin::email-designer.email-template': PluginEmailDesignerEmailTemplate;
       'api::bicycle.bicycle': ApiBicycleBicycle;
       'api::booking.booking': ApiBookingBooking;
+      'api::card-verification.card-verification': ApiCardVerificationCardVerification;
       'api::class.class': ApiClassClass;
       'api::guest.guest': ApiGuestGuest;
       'api::instructor.instructor': ApiInstructorInstructor;
