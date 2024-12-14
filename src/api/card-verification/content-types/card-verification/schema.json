@@ -37,6 +37,9 @@
     },
     "lastFourDigits": {
       "type": "string"
+    },
+    "verificationAmount": {
+      "type": "decimal"
     }
   }
 }

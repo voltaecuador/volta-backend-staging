@@ -984,6 +984,7 @@ export interface ApiCardVerificationCardVerification
     transactionId: Attribute.String;
     cardType: Attribute.String;
     lastFourDigits: Attribute.String;
+    verificationAmount: Attribute.Decimal;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
