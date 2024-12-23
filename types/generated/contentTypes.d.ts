@@ -985,6 +985,7 @@ export interface ApiCardVerificationCardVerification
     cardType: Attribute.String;
     lastFourDigits: Attribute.String;
     verificationAmount: Attribute.Decimal;
+    wasRefunded: Attribute.Boolean;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

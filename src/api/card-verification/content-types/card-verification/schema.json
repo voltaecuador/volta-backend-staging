@@ -40,6 +40,9 @@
     },
     "verificationAmount": {
       "type": "decimal"
+    },
+    "wasRefunded": {
+      "type": "boolean"
     }
   }
 }
