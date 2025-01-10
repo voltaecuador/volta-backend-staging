@@ -1141,16 +1141,8 @@ export interface ApiPastBookingPastBooking extends Schema.CollectionType {
     bookingStatus: Attribute.Enumeration<
       ['refunded', 'completed', 'cancelled']
     >;
-    class: Attribute.Relation<
-      'api::past-booking.past-booking',
-      'oneToOne',
-      'api::class.class'
-    >;
-    bicycles: Attribute.Relation<
-      'api::past-booking.past-booking',
-      'oneToMany',
-      'api::bicycle.bicycle'
-    >;
+    classData: Attribute.JSON;
+    bicyclesData: Attribute.JSON;
     users_permissions_user: Attribute.Relation<
       'api::past-booking.past-booking',
       'manyToOne',

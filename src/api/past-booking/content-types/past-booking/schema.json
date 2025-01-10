@@ -20,15 +20,11 @@
         "cancelled"
       ]
     },
-    "class": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::class.class"
+    "classData": {
+      "type": "json"
     },
-    "bicycles": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::bicycle.bicycle"
+    "bicyclesData": {
+      "type": "json"
     },
     "users_permissions_user": {
       "type": "relation",

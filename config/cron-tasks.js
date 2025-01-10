@@ -12,13 +12,13 @@ module.exports = {
               $lt: cutoffDate,
             },
             bookingStatus: {
-              $eq: "completed"  // Asegurarse de que solo se seleccionen los "completed"
+              $eq: "completed"
             },
           },
-          populate: ["class", "bicycles", "user", "guest"],
+          populate: ["class", "class.instructor", "bicycles", "user", "guest"],
         }
       );
-  
+
       let movedCount = 0;
       for (const oldBooking of oldBookings) {
         try {
@@ -26,30 +26,44 @@ module.exports = {
           const existingPastBooking = await strapi.entityService.findMany("api::past-booking.past-booking", {
             filters: {
               fechaHora: oldBooking.fechaHora,
-              users_permissions_user: oldBooking.user.id,
-              class: oldBooking.class.id
+              users_permissions_user: oldBooking.user.id
             },
             limit: 1
           });
 
           if (existingPastBooking.length > 0) {
             console.log(`Booking ${oldBooking.id} already exists in past-bookings. Skipping.`);
-            continue; // Salta a la siguiente iteración del bucle
+            continue;
           }
+
+          // Crear copias de los datos
+          const classData = {
+            nombreClase: oldBooking.class.nombreClase,
+            horaInicio: oldBooking.class.horaInicio,
+            horaFin: oldBooking.class.horaFin,
+            instructor: {
+              nombreCompleto: oldBooking.class.instructor.nombreCompleto,
+              email: oldBooking.class.instructor.email
+            }
+          };
+
+          const bicyclesData = oldBooking.bicycles.map(bike => ({
+            bicycleNumber: bike.bicycleNumber
+          }));
 
           const pastBookingData = {
             bookingStatus: oldBooking.bookingStatus,
-            class: oldBooking.class,
-            bicycles: oldBooking.bicycles,
+            classData,
+            bicyclesData,
             users_permissions_user: oldBooking.user,
             fechaHora: oldBooking.fechaHora,
-            guest: oldBooking.guest,
+            guest: oldBooking.guest
           };
-  
+
           await strapi.entityService.create("api::past-booking.past-booking", {
             data: { ...pastBookingData, publishedAt: new Date() },
           });
-  
+
           await strapi.entityService.delete(
             "api::booking.booking",
             oldBooking.id
@@ -60,11 +74,10 @@ module.exports = {
           console.error(`Error processing booking ${oldBooking.id}:`, error);
         }
       }
-  
       console.log(`Moved ${movedCount} completed bookings to pastBookings table`);
     },
     options: {
-      rule: "*/15 * * * *", // Run every 15 minutes
+      rule: "*/15 * * * *",
     },
   },
   actualizarClasesPorExpiracion: {
