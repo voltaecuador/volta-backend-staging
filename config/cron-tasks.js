@@ -82,47 +82,65 @@ module.exports = {
   },
   actualizarClasesPorExpiracion: {
     task: async ({ strapi }) => {
-      const ahora = new Date();
-      console.log(`Iniciando verificación de expiración a las ${ahora.toISOString()}`);
+      try {
+        const ahora = new Date();
+        console.log('=== INICIO DE CRON DE EXPIRACIÓN ===');
+        console.log(`Ejecutando verificación a las ${ahora.toISOString()}`);
 
-      // Calculamos la fecha de ayer al final del día
-      const ayerFinalDelDia = new Date(ahora);
-      ayerFinalDelDia.setDate(ayerFinalDelDia.getDate() - 1);
-      ayerFinalDelDia.setHours(23, 59, 59, 999);
-
-      const paquetesExpirados = await strapi.entityService.findMany('api::purchased-ride-pack.purchased-ride-pack', {
-        filters: {
-          fechaExpiracion: { $lte: ayerFinalDelDia },
-          contabilizado: false
-        },
-        populate: ['user']
-      });
-
-      console.log(`Encontrados ${paquetesExpirados.length} paquetes expirados`);
-
-      for (const paquete of paquetesExpirados) {
-        const clasesNoUtilizadas = paquete.clasesOriginales - paquete.clasesUtilizadas;
-        
-        // Actualizar clasesDisponibles del usuario
-        const usuario = paquete.user;
-        const nuevasClasesDisponibles = Math.max(usuario.clasesDisponibles - clasesNoUtilizadas, 0);
-        
-        await strapi.entityService.update('plugin::users-permissions.user', usuario.id, {
-          data: { clasesDisponibles: nuevasClasesDisponibles }
+        // Buscar TODOS los paquetes expirados y no contabilizados
+        const paquetesExpirados = await strapi.entityService.findMany('api::purchased-ride-pack.purchased-ride-pack', {
+          filters: {
+            fechaExpiracion: { $lt: ahora }, // Todos los que ya expiraron (antes de ahora)
+            contabilizado: false             // Y no han sido procesados
+          },
+          populate: ['user']
         });
 
-        // Marcar paquete como contabilizado
-        await strapi.entityService.update('api::purchased-ride-pack.purchased-ride-pack', paquete.id, {
-          data: { contabilizado: true }
-        });
+        console.log(`Encontrados ${paquetesExpirados.length} paquetes expirados`);
 
-        console.log(`Paquete ${paquete.id} expirado el ${new Date(paquete.fechaExpiracion).toISOString()}. Usuario ${usuario.id}: ${clasesNoUtilizadas} clases restadas. Nuevas clases disponibles: ${nuevasClasesDisponibles}`);
+        for (const paquete of paquetesExpirados) {
+          try {
+            // Verificar si el paquete tiene usuario
+            if (!paquete.user) {
+              console.log(`Paquete ${paquete.id} no tiene usuario asociado. Marcando como contabilizado.`);
+              await strapi.entityService.update('api::purchased-ride-pack.purchased-ride-pack', paquete.id, {
+                data: { contabilizado: true }
+              });
+              continue;
+            }
+
+            const clasesNoUtilizadas = paquete.clasesOriginales - paquete.clasesUtilizadas;
+            const usuario = paquete.user;
+            
+            // Verificar que clasesDisponibles sea un número
+            if (typeof usuario.clasesDisponibles !== 'number') {
+              usuario.clasesDisponibles = 0;
+            }
+
+            const nuevasClasesDisponibles = Math.max(usuario.clasesDisponibles - clasesNoUtilizadas, 0);
+            
+            await strapi.entityService.update('plugin::users-permissions.user', usuario.id, {
+              data: { clasesDisponibles: nuevasClasesDisponibles }
+            });
+
+            await strapi.entityService.update('api::purchased-ride-pack.purchased-ride-pack', paquete.id, {
+              data: { contabilizado: true }
+            });
+
+            console.log(`Paquete ${paquete.id} expirado el ${paquete.fechaExpiracion}. Usuario ${usuario.id}: ${clasesNoUtilizadas} clases restadas. Nuevas clases disponibles: ${nuevasClasesDisponibles}`);
+          } catch (error) {
+            console.error(`Error procesando paquete ${paquete.id}:`, error);
+          }
+        }
+
+        console.log('Actualización de clases por expiración completada');
+      } catch (error) {
+        console.error('ERROR EN CRON DE EXPIRACIÓN:', error);
       }
-
-      console.log('Actualización de clases por expiración completada');
     },
     options: {
-      rule: "*/15 * * * *", // Ejecutar todos los días a las 00:05 AM
+      // rule: "*/2 * * * *",
+      rule: '1 5 * * *', // 00:01 ET (05:01 UTC)
     },
   }
 };
