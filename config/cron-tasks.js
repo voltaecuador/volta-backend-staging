@@ -38,7 +38,7 @@ module.exports = {
 
           // Crear copias de los datos
           const classData = {
-            nombreClase: oldBooking.class.nombreClase,
+            nombreClase: oldBooking.class.nombreClase || `Rueda con ${oldBooking.class.instructor.nombreCompleto}`,
             horaInicio: oldBooking.class.horaInicio,
             horaFin: oldBooking.class.horaFin,
             instructor: {
@@ -122,7 +122,7 @@ module.exports = {
       console.log('Actualización de clases por expiración completada');
     },
     options: {
-      rule: '5 0 * * *', // Ejecutar todos los días a las 00:05 AM
+      rule: "*/15 * * * *", // Ejecutar todos los días a las 00:05 AM
     },
   }
 };

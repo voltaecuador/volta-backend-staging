@@ -45,7 +45,7 @@ module.exports = createCoreController("api::booking.booking", ({ strapi }) => ({
               templateReferenceId: 1,
             },
             {
-              class: booking.class.nombreClase,
+              class: booking.class.nombreClase || `Rueda con ${booking.class.instructor.nombreCompleto}`,
               fechaHora:
                 convertDate(booking.fechaHora) +
                 " a las " +
@@ -69,7 +69,7 @@ module.exports = createCoreController("api::booking.booking", ({ strapi }) => ({
               templateReferenceId: 2,
             },
             {
-              class: booking.class.nombreClase,
+              class: booking.class.nombreClase || `Rueda con ${booking.class.instructor.nombreCompleto}`,
               fechaHora:
                 convertDate(booking.fechaHora) +
                 " a las " +
@@ -95,7 +95,7 @@ module.exports = createCoreController("api::booking.booking", ({ strapi }) => ({
               templateReferenceId: 3,
             },
             {
-              class: booking.class.nombreClase,
+              class: booking.class.nombreClase || `Rueda con ${booking.class.instructor.nombreCompleto}`,
               fechaHora:
                 convertDate(booking.fechaHora) +
                 " a las " +
