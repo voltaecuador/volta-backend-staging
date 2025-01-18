@@ -16,11 +16,5 @@ module.exports = () => ({
             defaultReplyTo: 'developmentvolta@gmail.com',
           },
         },
-      },
-      "rest": {
-        defaultLimit: 500,
-        maxLimit: 500,
-        withCount: true,
-      },
-      
+      }
 });
