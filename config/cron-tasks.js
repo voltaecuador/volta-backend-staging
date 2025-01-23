@@ -1,85 +1,98 @@
 module.exports = {
-  // moveBookingsIntoOldBookingsTable: {
-  //   task: async ({ strapi }) => {
-  //     const currentDate = new Date();
-  //     const cutoffDate = new Date(currentDate.getTime() - 90 * 60000); // 1 hora y 30 minutos antes
-  
-  //     const oldBookings = await strapi.entityService.findMany(
-  //       "api::booking.booking",
-  //       {
-  //         filters: {
-  //           fechaHora: {
-  //             $lt: cutoffDate,
-  //           },
-  //           bookingStatus: {
-  //             $eq: "completed"
-  //           },
-  //         },
-  //         populate: ["class", "class.instructor", "bicycles", "user", "guest"],
-  //       }
-  //     );
+  moveBookingsIntoOldBookingsTable: {
+    task: async ({ strapi }) => {
+      const currentDate = new Date();
 
-  //     let movedCount = 0;
-  //     for (const oldBooking of oldBookings) {
-  //       try {
-  //         // Verificar si ya existe en past-booking
-  //         const existingPastBooking = await strapi.entityService.findMany("api::past-booking.past-booking", {
-  //           filters: {
-  //             fechaHora: oldBooking.fechaHora,
-  //             users_permissions_user: oldBooking.user.id
-  //           },
-  //           limit: 1
-  //         });
+      const oldBookings = await strapi.entityService.findMany(
+        "api::booking.booking",
+        {
+          filters: {
+            $and: [
+              {
+                bookingStatus: {
+                  $eq: "completed"
+                }
+              }
+            ]
+          },
+          populate: ["class", "class.instructor", "bicycles", "user", "guest"],
+        }
+      );
 
-  //         if (existingPastBooking.length > 0) {
-  //           console.log(`Booking ${oldBooking.id} already exists in past-bookings. Skipping.`);
-  //           continue;
-  //         }
+      let movedCount = 0;
+      for (const oldBooking of oldBookings) {
+        try {
+          // Combinar la fecha del booking con la hora de inicio de la clase
+          const bookingDate = new Date(oldBooking.fechaHora);
+          const [hours, minutes] = oldBooking.class.horaInicio.split(':');
+          const classStartTime = new Date(bookingDate);
+          classStartTime.setHours(parseInt(hours), parseInt(minutes), 0);
 
-  //         // Crear copias de los datos
-  //         const classData = {
-  //           nombreClase: oldBooking.class.nombreClase || `Rueda con ${oldBooking.class.instructor.nombreCompleto}`,
-  //           horaInicio: oldBooking.class.horaInicio,
-  //           horaFin: oldBooking.class.horaFin,
-  //           instructor: {
-  //             nombreCompleto: oldBooking.class.instructor.nombreCompleto,
-  //             email: oldBooking.class.instructor.email
-  //           }
-  //         };
+          const timeElapsedInMinutes = (currentDate - classStartTime) / (1000 * 60);
 
-  //         const bicyclesData = oldBooking.bicycles.map(bike => ({
-  //           bicycleNumber: bike.bicycleNumber
-  //         }));
+          // Solo procesar si han pasado al menos 90 minutos desde el inicio de la clase
+          if (timeElapsedInMinutes < 90) {
+            continue;
+          }
 
-  //         const pastBookingData = {
-  //           bookingStatus: oldBooking.bookingStatus,
-  //           classData,
-  //           bicyclesData,
-  //           users_permissions_user: oldBooking.user,
-  //           fechaHora: oldBooking.fechaHora,
-  //           guest: oldBooking.guest
-  //         };
+          // Verificar si ya existe en past-booking
+          const existingPastBooking = await strapi.entityService.findMany("api::past-booking.past-booking", {
+            filters: {
+              fechaHora: oldBooking.fechaHora,
+              users_permissions_user: oldBooking.user.id
+            },
+            limit: 1
+          });
 
-  //         await strapi.entityService.create("api::past-booking.past-booking", {
-  //           data: { ...pastBookingData, publishedAt: new Date() },
-  //         });
+          if (existingPastBooking.length > 0) {
+            console.log(`Booking ${oldBooking.id} already exists in past-bookings. Skipping.`);
+            continue;
+          }
 
-  //         await strapi.entityService.delete(
-  //           "api::booking.booking",
-  //           oldBooking.id
-  //         );
-          
-  //         movedCount++;
-  //       } catch (error) {
-  //         console.error(`Error processing booking ${oldBooking.id}:`, error);
-  //       }
-  //     }
-  //     console.log(`Moved ${movedCount} completed bookings to pastBookings table`);
-  //   },
-  //   options: {
-  //     rule: "*/15 * * * *",
-  //   },
-  // },
+          // Crear copias de los datos
+          const classData = {
+            nombreClase: oldBooking.class.nombreClase || `Rueda con ${oldBooking.class.instructor.nombreCompleto}`,
+            horaInicio: oldBooking.class.horaInicio,
+            horaFin: oldBooking.class.horaFin,
+            instructor: {
+              nombreCompleto: oldBooking.class.instructor.nombreCompleto,
+              email: oldBooking.class.instructor.email
+            }
+          };
+
+          const bicyclesData = oldBooking.bicycles.map(bike => ({
+            bicycleNumber: bike.bicycleNumber
+          }));
+
+          const pastBookingData = {
+            bookingStatus: oldBooking.bookingStatus,
+            classData,
+            bicyclesData,
+            users_permissions_user: oldBooking.user,
+            fechaHora: oldBooking.fechaHora,
+            guest: oldBooking.guest
+          };
+
+          await strapi.entityService.create("api::past-booking.past-booking", {
+            data: { ...pastBookingData, publishedAt: new Date() },
+          });
+
+          await strapi.entityService.delete(
+            "api::booking.booking",
+            oldBooking.id
+          );
+
+          movedCount++;
+        } catch (error) {
+          console.error(`Error processing booking ${oldBooking.id}:`, error);
+        }
+      }
+      console.log(`Moved ${movedCount} completed bookings to pastBookings table`);
+    },
+    options: {
+      rule: "*/15 * * * *",
+    },
+  },
   actualizarClasesPorExpiracion: {
     task: async ({ strapi }) => {
       try {
@@ -139,8 +152,7 @@ module.exports = {
       }
     },
     options: {
-      // rule: "*/2 * * * *",
-      rule: '1 5 * * *', // 00:01 ET (05:01 UTC)
+      rule: '1 0 * * *', // 12:01 AM hora Ecuador
     },
   }
 };
