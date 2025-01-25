@@ -13,5 +13,5 @@ module.exports = ({ env }) => ({
   webhooks: {
     populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
   },
-  timezone: 'America/Guayaquil',
+  // timezone: 'America/Guayaquil',
 });
