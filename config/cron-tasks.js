@@ -84,7 +84,7 @@ module.exports = {
       }
     },
     options: {
-      rule: "*/15 * * * *", // Cada 15 minutos
+      rule: '0 * * * *', // Ejecutar cada hora en el minuto 0
     },
   },
   actualizarClasesPorExpiracion: {
