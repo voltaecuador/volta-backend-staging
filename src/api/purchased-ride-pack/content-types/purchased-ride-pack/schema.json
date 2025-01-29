@@ -38,6 +38,12 @@
     },
     "authorizationCode": {
       "type": "string"
+    },
+    "tipo": {
+      "type": "string"
+    },
+    "valor": {
+      "type": "decimal"
     }
   }
 }
